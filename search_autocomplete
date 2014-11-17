@@ -1,0 +1,59 @@
+/*!
+ * search.js 
+ * Author: Mingqi Chen
+ * Autocomplete the people, item, category when user is searching
+ */
+//instantiate the bloodhound suggestion engine
+var category = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: '/beta/autocatesearch?Search=Search&q=%QUERY&autocomplete=yes&category=yes'
+});
+
+var item = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: '/beta/autoitemsearch?Search=Search&q=%QUERY&autocomplete=yes&item=yes'
+});
+
+var people = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: '/beta/autopeoplesearch?Search=Search&q=%QUERY&autocomplete=yes&people=yes'
+});
+
+// initialize the bloodhound suggestion engine
+category.initialize();
+item.initialize();
+people.initialize();
+
+$('#id_q').typeahead({
+	highlight: false
+},
+{
+  name: 'people',
+  displayKey: 'name',
+  source: people.ttAdapter(),
+  templates: {
+	header: '<div class=\"autocomplete_head_people\" style="padding-top:0.5em"><strong>People</strong></div>',
+	suggestion:_.template("<div class=\"autocomplete_people\"><poem>&nbsp&nbsp<%=name%></Poem></div>")
+  }
+},
+{
+  name: 'category',
+  displayKey: 'name',
+  source: category.ttAdapter(),
+  templates: {
+    header: '<div class=\"autocomplete_head_category\" style="padding-top:0.5em"><strong>Categories</strong></div>',
+    suggestion:_.template("<div class=\"autocomplete_category\"><poem>&nbsp&nbsp<%=name%></Poem></div>")
+  }
+},
+{
+  name: 'item',
+  displayKey: 'name',
+  source: item.ttAdapter(),
+  templates: {
+    header: '<div class=\"autocomplete_head_item\" style="padding-top:0.5em"><strong>Items</strong></div>',
+    suggestion:_.template("<div class=\"autocomplete_item\"><poem>&nbsp&nbsp<%=name%></Poem></div>")
+  }
+});
